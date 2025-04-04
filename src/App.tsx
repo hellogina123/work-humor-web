@@ -129,7 +129,8 @@ const App: React.FC = () => {
   };
 
   const handleConfirmExit = () => {
-    window.location.href = 'about:blank';
+    // 在 iOS 上，我們顯示一個訊息而不是嘗試關閉視窗
+    alert('感謝您的使用！您可以關閉瀏覽器標籤頁來離開。');
   };
 
   const handleCancelExit = () => {
@@ -144,19 +145,24 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    // 從 localStorage 讀取使用者計數
-    const storedCount = localStorage.getItem('userCount');
-    const count = storedCount ? parseInt(storedCount, 10) : 0;
-    setUserCount(count);
-
-    // 檢查是否是新使用者
-    const hasVisited = localStorage.getItem('hasVisited');
-    if (!hasVisited) {
-      // 如果是新使用者，增加計數
+    // 使用 sessionStorage 來判斷是否是新會話
+    const sessionId = sessionStorage.getItem('sessionId');
+    if (!sessionId) {
+      // 如果是新會話，增加計數
+      const storedCount = localStorage.getItem('userCount');
+      const count = storedCount ? parseInt(storedCount, 10) : 0;
       const newCount = count + 1;
       setUserCount(newCount);
       localStorage.setItem('userCount', newCount.toString());
-      localStorage.setItem('hasVisited', 'true');
+      
+      // 生成新的會話 ID
+      const newSessionId = Date.now().toString();
+      sessionStorage.setItem('sessionId', newSessionId);
+    } else {
+      // 如果是現有會話，只顯示計數
+      const storedCount = localStorage.getItem('userCount');
+      const count = storedCount ? parseInt(storedCount, 10) : 0;
+      setUserCount(count);
     }
   }, []);
 
@@ -178,6 +184,9 @@ const App: React.FC = () => {
           <ExitMessage>
             <h2>感謝您的使用！</h2>
             <p>希望這些語錄能為您帶來一些歡樂。</p>
+            <p style={{ fontSize: '14px', color: '#666' }}>
+              您可以關閉瀏覽器標籤頁來離開。
+            </p>
             <ButtonContainer>
               <Button onClick={handleConfirmExit}>確定離開</Button>
               <Button variant="secondary" onClick={handleCancelExit}>繼續觀看</Button>
