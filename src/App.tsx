@@ -59,6 +59,17 @@ const UserCount = styled.div`
   font-size: 14px;
 `;
 
+const ExitMessage = styled.div`
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 20px;
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+`;
+
 const App: React.FC = () => {
   const [quotes, setQuotes] = useState<Quote[]>(initialQuotes);
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
@@ -68,6 +79,7 @@ const App: React.FC = () => {
   const [viewedQuotes, setViewedQuotes] = useState<Set<number>>(new Set());
   const [userCount, setUserCount] = useState<number>(0);
   const [currentRating, setCurrentRating] = useState<number | null>(null);
+  const [showExitMessage, setShowExitMessage] = useState(false);
 
   const currentQuote = quotes[currentQuoteIndex];
 
@@ -113,7 +125,15 @@ const App: React.FC = () => {
   };
 
   const handleExit = () => {
-    window.close();
+    setShowExitMessage(true);
+  };
+
+  const handleConfirmExit = () => {
+    window.location.href = 'about:blank';
+  };
+
+  const handleCancelExit = () => {
+    setShowExitMessage(false);
   };
 
   const handleContinue = () => {
@@ -154,7 +174,16 @@ const App: React.FC = () => {
       </Header>
 
       <MainContent>
-        {!showTopQuotes ? (
+        {showExitMessage ? (
+          <ExitMessage>
+            <h2>感謝您的使用！</h2>
+            <p>希望這些語錄能為您帶來一些歡樂。</p>
+            <ButtonContainer>
+              <Button onClick={handleConfirmExit}>確定離開</Button>
+              <Button variant="secondary" onClick={handleCancelExit}>繼續觀看</Button>
+            </ButtonContainer>
+          </ExitMessage>
+        ) : !showTopQuotes ? (
           <>
             <QuoteCard
               quote={currentQuote}
