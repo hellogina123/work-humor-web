@@ -67,6 +67,7 @@ const App: React.FC = () => {
   const [hasRated, setHasRated] = useState(false);
   const [viewedQuotes, setViewedQuotes] = useState<Set<number>>(new Set());
   const [userCount, setUserCount] = useState<number>(0);
+  const [currentRating, setCurrentRating] = useState<number | null>(null);
 
   const currentQuote = quotes[currentQuoteIndex];
 
@@ -86,6 +87,7 @@ const App: React.FC = () => {
   };
 
   const handleRate = (rating: number) => {
+    setCurrentRating(rating);
     const updatedQuotes = quotes.map((quote) =>
       quote.id === currentQuote.id
         ? {
@@ -96,15 +98,18 @@ const App: React.FC = () => {
         : quote
     );
     setQuotes(updatedQuotes);
-    setViewedCount((prev) => prev + 1);
     setHasRated(true);
-    setViewedQuotes(prev => new Set([...prev, currentQuoteIndex]));
   };
 
   const handleNext = () => {
+    if (currentRating !== null) {
+      setViewedCount((prev) => prev + 1);
+      setViewedQuotes(prev => new Set([...prev, currentQuoteIndex]));
+    }
     const nextIndex = getRandomUnviewedQuoteIndex();
     setCurrentQuoteIndex(nextIndex);
     setHasRated(false);
+    setCurrentRating(null);
   };
 
   const handleExit = () => {
@@ -154,7 +159,8 @@ const App: React.FC = () => {
             <QuoteCard
               quote={currentQuote}
               onRate={handleRate}
-              disabled={hasRated}
+              disabled={false}
+              currentRating={currentRating}
             />
             {!hasRated && (
               <RatingHint>請為這則語錄評分，幫助我們改進內容！</RatingHint>

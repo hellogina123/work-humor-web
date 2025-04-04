@@ -7,6 +7,7 @@ interface QuoteCardProps {
   quote: Quote;
   onRate: (rating: number) => void;
   disabled?: boolean;
+  currentRating?: number | null;
 }
 
 const Card = styled.div`
@@ -37,12 +38,13 @@ const QuoteCard: React.FC<QuoteCardProps> = ({
   quote,
   onRate,
   disabled = false,
+  currentRating = null,
 }) => {
   return (
     <Card>
       <QuoteText>{quote.text}</QuoteText>
       <Rating
-        value={quote.rating}
+        value={currentRating ?? quote.rating}
         onChange={onRate}
         disabled={disabled}
       />
